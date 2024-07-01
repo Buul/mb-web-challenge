@@ -1,0 +1,1 @@
+export { TemplateMain } from './Main';
