@@ -12,6 +12,11 @@ const meta: Meta = {
         disable: true,
       },
     },
+    asChild: {
+      table: {
+        disable: true,
+      },
+    },
   },
   parameters: {
     controls: { expanded: true },
@@ -47,7 +52,12 @@ const Template: StoryFn<RadioProps> = args => {
   };
 
   return (
-    <RadioComponent {...args} value={value} onValueChange={handleChange} />
+    <RadioComponent
+      {...args}
+      defaultValue={value}
+      value={value}
+      onValueChange={handleChange}
+    />
   );
 };
 export const Default = Template.bind({});
@@ -55,3 +65,9 @@ export const Default = Template.bind({});
 Default.parameters = { options: { showPanel: true } };
 
 Default.args = { ...argsProps };
+
+export const WithError = Template.bind({});
+
+WithError.parameters = { options: { showPanel: true } };
+
+WithError.args = { ...argsProps, errorMessage: 'Campo obrigatório' };

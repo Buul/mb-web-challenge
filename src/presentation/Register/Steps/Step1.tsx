@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-misused-promises */
 import { FC, useEffect } from 'react';
 import { useFormik } from 'formik';
 import { isEmpty } from 'lodash';
@@ -72,7 +73,6 @@ export const Step1: FC<StepPage> = ({ onContinue, form }) => {
           radioOptions={radioOptions}
           value={formik.values.person}
           defaultValue={formik.values.person}
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onValueChange={(value: 'PF' | 'PJ') =>
             formik.setFieldValue('person', value)
           }
