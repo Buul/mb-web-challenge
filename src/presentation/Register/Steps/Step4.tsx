@@ -1,20 +1,54 @@
 import { FC, useEffect } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import { useFormik } from 'formik';
 import { isEmpty } from 'lodash';
 
 import { Title } from '@/components';
 import { Button, Input } from '@/components/Form';
+import { createUser } from '@/flux/modules/user/actions';
+import { UserRequest } from '@/flux/modules/user/types';
+import { useCreateUser } from '@/hook/selectors/userHooks';
+import { useAppDispatch } from '@/hook/store';
+import { ErrorType, SanitizeError } from '@/models/errors';
+import { RequestStatus } from '@/models/iRequest';
+import { emptyMask } from '@/utils/formatString';
 import { registerStep4Schema } from '@/utils/schemas';
 
 import { StepPage } from '../type';
 
 export const Step4: FC<StepPage> = ({ onContinue, form }) => {
+  const dispatch = useAppDispatch();
+  const { status, message } = useCreateUser();
   const fillFormik = (key: string, value?: string) => {
     if (value) {
       formik.setFieldValue(key, value);
       formik.setFieldTouched(key, false);
     }
   };
+
+  useEffect(() => {
+    if (status === RequestStatus.success) {
+      toast.success('Usuário adicionado com sucesso!');
+    }
+    if (status === RequestStatus.error) {
+      if (message === ErrorType.INVALID_CPF) {
+        formik.setFieldError('cpf', SanitizeError.INVALID_CPF_MESSAGE);
+      }
+      if (message === ErrorType.INVALID_CNPJ) {
+        formik.setFieldError('cnpj', SanitizeError.INVALID_CNPJ_MESSAGE);
+      }
+      if (message === ErrorType.INVALID_BIRTHDATE) {
+        formik.setFieldError('birthDate', SanitizeError.INVALID_DATE_MESSAGE);
+      }
+      if (message === ErrorType.INVALID_ORIGINDATE) {
+        formik.setFieldError('originDate', SanitizeError.INVALID_DATE_MESSAGE);
+      }
+      if (message === ErrorType.INVALID_EMAIL) {
+        formik.setFieldError('email', SanitizeError.INVALID_EMAIL_MESSAGE);
+      }
+      toast.error('Erro ao adicionar o usuário!');
+    }
+  }, [status]);
 
   useEffect(() => {
     if (!isEmpty(form)) {
@@ -47,7 +81,27 @@ export const Step4: FC<StepPage> = ({ onContinue, form }) => {
       step,
     });
   };
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    const payload: UserRequest = {
+      email: formik.values.email,
+      password: formik.values.password,
+      person: formik.values.person,
+    };
+
+    if (formik.values.person === 'PF') {
+      payload.name = formik.values.name;
+      payload.cpf = emptyMask(formik.values.cpf);
+      payload.birthDate = formik.values.birthDate;
+      payload.phone = emptyMask(formik.values.phone);
+    } else {
+      payload.corporateName = formik.values.corporateName;
+      payload.cnpj = emptyMask(formik.values.cnpj);
+      payload.openingDate = formik.values.openingDate;
+      payload.companyPhone = emptyMask(formik.values.companyPhone);
+    }
+
+    dispatch(createUser.request(payload));
+  };
 
   const handleBack = () => {
     redirect(3);
@@ -65,6 +119,7 @@ export const Step4: FC<StepPage> = ({ onContinue, form }) => {
       birthDate: '',
       phone: '',
       password: '',
+      person: '',
     },
     validateOnChange: true,
     validateOnBlur: true,
@@ -216,6 +271,7 @@ export const Step4: FC<StepPage> = ({ onContinue, form }) => {
             Cadastrar
           </Button>
         </div>
+        <Toaster position="bottom-center" reverseOrder={false} />
       </form>
     </>
   );
