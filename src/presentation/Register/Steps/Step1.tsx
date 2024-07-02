@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-misused-promises */
 import { FC, useEffect } from 'react';
 import { useFormik } from 'formik';
 import { isEmpty } from 'lodash';
