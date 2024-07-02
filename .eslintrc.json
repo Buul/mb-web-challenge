@@ -113,6 +113,6 @@
     "jsx-a11y/anchor-is-valid": "off",
     "react/button-has-type": "off",
     "@typescript-eslint/no-unsafe-assignment": "off",
-    "@typescript-eslint/no-misused-promises ": "off"
+    "@typescript-eslint/no-misused-promises": "off"
   }
 }
